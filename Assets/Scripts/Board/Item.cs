@@ -10,6 +10,7 @@ public class Item
     public Cell Cell { get; private set; }
 
     public Transform View { get; private set; }
+    public bool isBonusItem;
 
 
     public virtual void SetView()
@@ -98,17 +99,17 @@ public class Item
     {
         if (View)
         {
+            GameManager.Instance.FxHub.SpawnExplodeView(View.transform.position);
             View.DOScale(0.1f, 0.1f).OnComplete(
                 () =>
                 {
+                    View.DOKill();
                     GameObject.Destroy(View.gameObject);
                     View = null;
                 }
                 );
         }
     }
-
-
 
     internal void AnimateForHint()
     {

@@ -8,6 +8,23 @@ public class GameManager : MonoBehaviour
 {
     public event Action<eStateGame> StateChangedAction = delegate { };
 
+    [SerializeField] private GameSettings m_gameSettings;
+    [SerializeField] private ItemData itemData;
+    [SerializeField] private BoardController m_boardController;
+    [SerializeField] private UIMainManager m_uiMenu;
+    [SerializeField] private FxHub fxHub;
+    [SerializeField] private ItemCounter itemCounter;
+    [SerializeField] private eStateGame m_state;
+    [SerializeField] private eLevelMode mode;
+    private LevelCondition m_levelCondition;
+
+    private bool onRestart;
+
+    public static GameManager Instance;
+    public ItemData ItemData => itemData;
+    public FxHub FxHub => fxHub;
+    public ItemCounter ItemCounter => itemCounter;
+
     public enum eLevelMode
     {
         TIMER,
@@ -23,7 +40,6 @@ public class GameManager : MonoBehaviour
         GAME_OVER,
     }
 
-    private eStateGame m_state;
     public eStateGame State
     {
         get { return m_state; }
@@ -35,23 +51,22 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
-    private GameSettings m_gameSettings;
-
-
-    private BoardController m_boardController;
-
-    private UIMainManager m_uiMenu;
-
-    private LevelCondition m_levelCondition;
-
     private void Awake()
     {
+        if (Instance == null) Instance = this;
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         State = eStateGame.SETUP;
 
-        m_gameSettings = Resources.Load<GameSettings>(Constants.GAME_SETTINGS_PATH);
+        if (m_gameSettings == null) //optimal performance
+            m_gameSettings = Resources.Load<GameSettings>(Constants.GAME_SETTINGS_PATH);
 
-        m_uiMenu = FindObjectOfType<UIMainManager>();
+        if (m_uiMenu == null) //optimal performance
+            m_uiMenu = FindObjectOfType<UIMainManager>();
         m_uiMenu.Setup(this);
     }
 
@@ -70,8 +85,7 @@ public class GameManager : MonoBehaviour
     internal void SetState(eStateGame state)
     {
         State = state;
-
-        if(State == eStateGame.PAUSE)
+        if (State == eStateGame.PAUSE)
         {
             DOTween.PauseAll();
         }
@@ -83,9 +97,10 @@ public class GameManager : MonoBehaviour
 
     public void LoadLevel(eLevelMode mode)
     {
-        m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
+        if (m_boardController == null) //optimal performance
+            m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
         m_boardController.StartGame(this, m_gameSettings);
-
+        this.mode = mode;
         if (mode == eLevelMode.MOVES)
         {
             m_levelCondition = this.gameObject.AddComponent<LevelMoves>();
@@ -134,6 +149,21 @@ public class GameManager : MonoBehaviour
 
             Destroy(m_levelCondition);
             m_levelCondition = null;
+        }
+    }
+
+    public void SetOnRestart(bool status)
+    {
+        onRestart = status;
+    }
+
+    public void OnRestart()
+    {
+        if (onRestart)
+        {
+            itemCounter.ResetAll();
+            SetOnRestart(false);
+            LoadLevel(mode);
         }
     }
 }
