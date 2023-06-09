@@ -74,6 +74,7 @@ public class BoardController : MonoBehaviour
     {
         if (m_gameOver) return;
         if (IsBusy) return;
+        if (m_gameSettings == null) return;
 
         if (!m_hintIsShown)
         {
@@ -202,18 +203,17 @@ public class BoardController : MonoBehaviour
 
     private List<Cell> GetMatches(Cell cell)
     {
+        if (m_board == null) return null;
         List<Cell> listHor = m_board.GetHorizontalMatches(cell);
-        if (listHor.Count < m_gameSettings.MatchesMin)
+        if (listHor.Count < m_gameSettings.MatchesMin) //m_gameSettings null ||   m_gameSettings.MatchesMin null
         {
             listHor.Clear();
         }
-
         List<Cell> listVert = m_board.GetVerticalMatches(cell);
         if (listVert.Count < m_gameSettings.MatchesMin)
         {
             listVert.Clear();
         }
-
         return listHor.Concat(listVert).Distinct().ToList();
     }
 
@@ -224,7 +224,7 @@ public class BoardController : MonoBehaviour
             matches[i].ExplodeItem();
         }
 
-        if(matches.Count > m_gameSettings.MatchesMin)
+        if (matches.Count > m_gameSettings.MatchesMin)
         {
             m_board.ConvertNormalToBonus(matches, cellEnd);
         }

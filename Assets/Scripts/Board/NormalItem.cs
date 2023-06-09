@@ -4,22 +4,27 @@ using UnityEngine;
 
 public class NormalItem : Item
 {
-    public enum eNormalType
-    {
-        TYPE_ONE,
-        TYPE_TWO,
-        TYPE_THREE,
-        TYPE_FOUR,
-        TYPE_FIVE,
-        TYPE_SIX,
-        TYPE_SEVEN
-    }
-
     public eNormalType ItemType;
+
+    private SpriteRenderer spriteRenderer;
 
     public void SetType(eNormalType type)
     {
         ItemType = type;
+        isBonusItem = false;
+    }
+
+    public override void SetView()
+    {
+        base.SetView();
+
+        if(View != null)
+        {
+            if (spriteRenderer == null) spriteRenderer = View.GetComponent<SpriteRenderer>();
+            spriteRenderer.sprite = GameManager.Instance.ItemData.GetItemSkin(ItemType);
+            View.gameObject.name = ItemType.ToString();
+            GameManager.Instance.ItemCounter.OnChange(ItemType, 1);
+        }
     }
 
     protected override string GetPrefabName()
@@ -59,4 +64,21 @@ public class NormalItem : Item
 
         return it != null && it.ItemType == this.ItemType;
     }
+
+    internal override void ExplodeView()
+    {
+        base.ExplodeView();
+        GameManager.Instance.ItemCounter.OnChange(ItemType, -1);
+    }
+}
+
+public enum eNormalType
+{
+    TYPE_ONE,
+    TYPE_TWO,
+    TYPE_THREE,
+    TYPE_FOUR,
+    TYPE_FIVE,
+    TYPE_SIX,
+    TYPE_SEVEN
 }

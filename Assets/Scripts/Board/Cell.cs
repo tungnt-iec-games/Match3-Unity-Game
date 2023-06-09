@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Cell : MonoBehaviour
@@ -78,16 +79,47 @@ public class Cell : MonoBehaviour
 
     internal void AnimateItemForHint()
     {
+        if (Item == null) return;
         Item.AnimateForHint();
     }
 
     internal void StopHintAnimation()
     {
+        if (Item == null) return;
         Item.StopAnimateForHint();
     }
 
     internal void ApplyItemMoveToPosition()
     {
+        if (Item == null) return;
         Item.AnimationMoveToPosition();
+    }
+
+    internal List<eNormalType> GetTypeNeighbourCell()
+    {
+        var neighbour = new List<eNormalType>();
+
+        var upItem = GetNearNormalItem(NeighbourUp);
+        if (upItem != null) neighbour.Add(upItem.ItemType);
+
+        var bottomItem = GetNearNormalItem(NeighbourBottom);
+        if (bottomItem != null) neighbour.Add(bottomItem.ItemType);
+
+        var leftItem = GetNearNormalItem(NeighbourLeft);
+        if (leftItem != null) neighbour.Add(leftItem.ItemType);
+
+        var rightItem = GetNearNormalItem(NeighbourRight);
+        if (rightItem != null) neighbour.Add(rightItem.ItemType);
+        return neighbour;
+    }
+
+    NormalItem GetNearNormalItem(Cell cell)
+    {
+        if (cell != null && cell.Item != null && !cell.Item.isBonusItem)
+        {
+            var item = (NormalItem)cell.Item;
+            return item;
+        }
+        return null;
     }
 }

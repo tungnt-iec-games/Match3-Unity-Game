@@ -7,21 +7,27 @@ using URandom = UnityEngine.Random;
 
 public class Utils
 {
-    public static NormalItem.eNormalType GetRandomNormalType()
+    public static eNormalType GetRandomNormalType()
     {
-        Array values = Enum.GetValues(typeof(NormalItem.eNormalType));
-        NormalItem.eNormalType result = (NormalItem.eNormalType)values.GetValue(URandom.Range(0, values.Length));
+        Array values = Enum.GetValues(typeof(eNormalType));
+        eNormalType result = (eNormalType)values.GetValue(URandom.Range(0, values.Length));
 
         return result;
     }
 
-    public static NormalItem.eNormalType GetRandomNormalTypeExcept(NormalItem.eNormalType[] types)
+    public static eNormalType GetRandomNormalTypeExcept(eNormalType[] types)
     {
-        List<NormalItem.eNormalType> list = Enum.GetValues(typeof(NormalItem.eNormalType)).Cast<NormalItem.eNormalType>().Except(types).ToList();
+        List<eNormalType> list = Enum.GetValues(typeof(eNormalType)).Cast<eNormalType>().Except(types).ToList();
 
         int rnd = URandom.Range(0, list.Count);
-        NormalItem.eNormalType result = list[rnd];
+        eNormalType result = list[rnd];
 
+        return result;
+    }
+
+    public static eNormalType GetRandomNormalType(List<eNormalType> types)
+    {
+        eNormalType result = GameManager.Instance.ItemCounter.GetMinType(types);
         return result;
     }
 }

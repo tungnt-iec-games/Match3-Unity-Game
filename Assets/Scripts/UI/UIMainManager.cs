@@ -28,6 +28,7 @@ public class UIMainManager : MonoBehaviour
     {
         m_gameManager.ClearLevel();
         m_gameManager.SetState(GameManager.eStateGame.MAIN_MENU);
+        GameManager.Instance.OnRestart();
     }
 
     void Update()

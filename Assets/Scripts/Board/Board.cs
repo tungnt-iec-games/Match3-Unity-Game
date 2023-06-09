@@ -81,7 +81,7 @@ public class Board
                 Cell cell = m_cells[x, y];
                 NormalItem item = new NormalItem();
 
-                List<NormalItem.eNormalType> types = new List<NormalItem.eNormalType>();
+                List<eNormalType> types = new List<eNormalType>();
                 if (cell.NeighbourBottom != null)
                 {
                     NormalItem nitem = cell.NeighbourBottom.Item as NormalItem;
@@ -135,7 +135,6 @@ public class Board
         }
     }
 
-
     internal void FillGapsWithNewItems()
     {
         for (int x = 0; x < boardSizeX; x++)
@@ -144,10 +143,8 @@ public class Board
             {
                 Cell cell = m_cells[x, y];
                 if (!cell.IsEmpty) continue;
-
                 NormalItem item = new NormalItem();
-
-                item.SetType(Utils.GetRandomNormalType());
+                item.SetType(Utils.GetRandomNormalType(cell.GetTypeNeighbourCell()));
                 item.SetView();
                 item.SetViewRoot(m_root);
 
@@ -319,29 +316,30 @@ public class Board
     internal List<Cell> FindFirstMatch()
     {
         List<Cell> list = new List<Cell>();
-
-        for (int x = 0; x < boardSizeX; x++)
+        if(m_cells != null)
         {
-            for (int y = 0; y < boardSizeY; y++)
+            for (int x = 0; x < boardSizeX; x++)
             {
-                Cell cell = m_cells[x, y];
-
-                var listhor = GetHorizontalMatches(cell);
-                if (listhor.Count >= m_matchMin)
+                for (int y = 0; y < boardSizeY; y++)
                 {
-                    list = listhor;
-                    break;
-                }
+                    Cell cell = m_cells[x, y];
 
-                var listvert = GetVerticalMatches(cell);
-                if (listvert.Count >= m_matchMin)
-                {
-                    list = listvert;
-                    break;
+                    var listhor = GetHorizontalMatches(cell);
+                    if (listhor.Count >= m_matchMin)
+                    {
+                        list = listhor;
+                        break;
+                    }
+
+                    var listvert = GetVerticalMatches(cell);
+                    if (listvert.Count >= m_matchMin)
+                    {
+                        list = listvert;
+                        break;
+                    }
                 }
             }
         }
-
         return list;
     }
 
