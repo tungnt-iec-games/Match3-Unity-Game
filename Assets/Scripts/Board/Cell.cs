@@ -17,6 +17,7 @@ public class Cell : MonoBehaviour
 
     public Cell NeighbourLeft { get; set; }
 
+    public event Action<NormalItem> OnNormalItemExploded;
 
     public bool IsEmpty => Item == null;
 
@@ -68,10 +69,14 @@ public class Cell : MonoBehaviour
         return Item != null && other.Item != null && Item.IsSameType(other.Item);
     }
 
-    internal void ExplodeItem()
+    internal void ExplodeItem(bool restart = false)
     {
         if (Item == null) return;
 
+        if (Item is NormalItem && !restart)
+        {
+            OnNormalItemExploded?.Invoke((NormalItem) Item);
+        }
         Item.ExplodeView();
         Item = null;
     }

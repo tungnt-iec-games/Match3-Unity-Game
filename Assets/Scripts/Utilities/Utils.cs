@@ -24,4 +24,20 @@ public class Utils
 
         return result;
     }
+
+    public static List<NormalItem.eNormalType> GetNormalTypesExcept(NormalItem.eNormalType[] types)
+    {
+        List<NormalItem.eNormalType> list = Enum.GetValues(typeof(NormalItem.eNormalType)).Cast<NormalItem.eNormalType>().Except(types).ToList();
+        return list;
+    }
+
+    public static NormalItem.eNormalType GetLeastAmountNormalType(List<NormalItem.eNormalType> types, Dictionary<NormalItem.eNormalType, int> countMap)
+    {
+        var orderedTypes = countMap
+            .Where(entry => types.Contains(entry.Key))
+            .OrderBy(entry => entry.Value)
+            .Select(entry => entry.Key)
+            .ToList();
+        return orderedTypes[0];
+    }
 }

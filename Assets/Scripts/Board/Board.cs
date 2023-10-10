@@ -27,6 +27,8 @@ public class Board
 
     private GameSettings m_gameSettings;
 
+    private Dictionary<NormalItem.eNormalType, int> NormalItemCountMap;
+
     public Board(Transform transform, GameSettings gameSettings)
     {
         m_root = transform;
@@ -39,6 +41,8 @@ public class Board
         m_cells = new Cell[boardSizeX, boardSizeY];
 
         m_gameSettings = gameSettings;
+
+        NormalItemCountMap = new Dictionary<NormalItem.eNormalType, int>();
 
         CreateBoard();
     }
@@ -56,6 +60,8 @@ public class Board
 
                 Cell cell = go.GetComponent<Cell>();
                 cell.Setup(x, y);
+
+                cell.OnNormalItemExploded += HandleNormalItemExploded;
 
                 m_cells[x, y] = cell;
             }
@@ -104,12 +110,15 @@ public class Board
                 }
 
                 var itemType = Utils.GetRandomNormalTypeExcept(types.ToArray());
-                item.SetItemConfig(m_gameSettings.GetItemConfig(itemType.ToString()));
+                string itemTypeStr = itemType.ToString();
+                item.SetItemConfig(m_gameSettings.GetItemConfig(itemTypeStr));
                 item.SetView();
                 item.SetViewRoot(m_root);
 
                 cell.Assign(item);
                 cell.ApplyItemPosition(false);
+
+                AddNormalItem(itemType);
             }
         }
     }
@@ -151,13 +160,40 @@ public class Board
 
                 NormalItem item = new NormalItem();
 
-                var itemType = Utils.GetRandomNormalType();
-                item.SetItemConfig(m_gameSettings.GetItemConfig(itemType.ToString()));
+                var ignoreTypes = new List<NormalItem.eNormalType>();
+
+                if (cell.NeighbourBottom != null)
+                {
+                    var bottomItem = cell.NeighbourBottom.Item as NormalItem;
+                    if (bottomItem != null) { ignoreTypes.Add(bottomItem.ItemType); }
+                }
+                if (cell.NeighbourUp != null)
+                {
+                    var upItem = cell.NeighbourUp.Item as NormalItem;
+                    if (upItem != null) { ignoreTypes.Add(upItem.ItemType); }
+                }
+                if (cell.NeighbourLeft != null)
+                {
+                    var leftItem = cell.NeighbourLeft.Item as NormalItem;
+                    if (leftItem != null) { ignoreTypes.Add(leftItem.ItemType); }
+                }
+                if (cell.NeighbourRight != null)
+                {
+                    var rightItem = cell.NeighbourRight.Item as NormalItem;
+                    if (rightItem != null) { ignoreTypes.Add(rightItem.ItemType); }
+                }
+
+                var itemTypes = Utils.GetNormalTypesExcept(ignoreTypes.ToArray());
+                var itemType = Utils.GetLeastAmountNormalType(itemTypes, NormalItemCountMap);
+                string itemTypeStr = itemType.ToString();
+                item.SetItemConfig(m_gameSettings.GetItemConfig(itemTypeStr));
                 item.SetView();
                 item.SetViewRoot(m_root);
 
                 cell.Assign(item);
                 cell.ApplyItemPosition(true);
+
+                AddNormalItem(itemType);
             }
         }
     }
@@ -667,13 +703,45 @@ public class Board
         }
     }
 
+    private void HandleNormalItemExploded(NormalItem item)
+    {
+        RemoveNormalItem(item.ItemType);
+    }
+
+    private void AddNormalItem(NormalItem.eNormalType type)
+    {
+        if (NormalItemCountMap.ContainsKey(type))
+        {
+            NormalItemCountMap[type]++;
+        }
+        else
+        {
+            NormalItemCountMap.Add(type, 1);
+        }
+    }
+
+    private void RemoveNormalItem(NormalItem.eNormalType type)
+    {
+        if (NormalItemCountMap.ContainsKey(type))
+        {
+            NormalItemCountMap[type]--;
+        }
+        else
+        {
+            NormalItemCountMap.Add(type, 0);
+        }
+    }
+
     public void Clear()
     {
+        NormalItemCountMap.Clear();
+
         for (int x = 0; x < boardSizeX; x++)
         {
             for (int y = 0; y < boardSizeY; y++)
             {
                 Cell cell = m_cells[x, y];
+                cell.OnNormalItemExploded -= HandleNormalItemExploded;
                 cell.Clear();
 
                 GameHelper.DespawnGameObject(cell.gameObject);
@@ -684,12 +752,14 @@ public class Board
 
     public void Restart()
     {
+        NormalItemCountMap.Clear();
+     
         for (int x = 0; x < boardSizeX; x++)
         {
             for (int y = 0; y < boardSizeY; y++)
             {
                 Cell cell = m_cells[x, y];
-                cell.ExplodeItem();
+                cell.ExplodeItem(true);
             }
         }
     }
