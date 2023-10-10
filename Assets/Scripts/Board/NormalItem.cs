@@ -17,17 +17,10 @@ public class NormalItem : Item
 
     public eNormalType ItemType;
 
-    private ItemConfig m_itemConfig;
-
-    public void SetItemConfig(ItemConfig itemConfig)
+    public override void SetItemConfig(ItemConfig itemConfig)
     {
-        m_itemConfig = itemConfig;
-        ItemType = itemConfig.Type;
-    }
-
-    protected override Sprite GetSprite()
-    {
-        return m_itemConfig.Sprite;
+        base.SetItemConfig(itemConfig);
+        ItemType = (eNormalType) System.Enum.Parse(typeof(eNormalType), itemConfig.Type);
     }
 
     internal override bool IsSameType(Item other)

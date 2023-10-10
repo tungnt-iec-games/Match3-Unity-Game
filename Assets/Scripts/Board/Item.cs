@@ -11,6 +11,12 @@ public class Item
 
     public Transform View { get; private set; }
 
+    protected ItemConfig m_itemConfig;
+
+    public virtual void SetItemConfig(ItemConfig itemConfig)
+    {
+        m_itemConfig = itemConfig;
+    }
 
     public virtual void SetView()
     {
@@ -28,7 +34,10 @@ public class Item
 
     protected virtual string GetPrefabName() { return string.Empty; }
 
-    protected virtual Sprite GetSprite() { return null; }
+    protected Sprite GetSprite()
+    {
+        return m_itemConfig.Sprite;
+    }
 
     public virtual void SetCell(Cell cell)
     {

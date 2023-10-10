@@ -21,20 +21,20 @@ public class GameSettings : ScriptableObject
     [SerializeField]
     private List<ThemeConfig> m_themeConfigList;
 
-    private Dictionary<NormalItem.eNormalType, ItemConfig> m_itemConfigMap;
+    private Dictionary<string, ItemConfig> m_itemConfigMap;
 
     public void Init()
     {
         var themeConfig = m_themeConfigList.Find(c => c.Type == ThemeType);
 
-        m_itemConfigMap = new Dictionary<NormalItem.eNormalType, ItemConfig>();
+        m_itemConfigMap = new Dictionary<string, ItemConfig>();
         foreach (var itemConfig in themeConfig.ItemConfigList)
         {
             m_itemConfigMap.Add(itemConfig.Type, itemConfig);
         }
     }
 
-    public ItemConfig GetItemConfig(NormalItem.eNormalType type)
+    public ItemConfig GetItemConfig(string type)
     {
         if (m_itemConfigMap.TryGetValue(type, out var itemConfig))
         {
@@ -55,7 +55,7 @@ public class ThemeConfig
 [System.Serializable]
 public class ItemConfig
 {
-    public NormalItem.eNormalType Type;
+    public string Type;
     public Sprite Sprite;
 }
 

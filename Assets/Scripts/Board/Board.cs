@@ -104,7 +104,7 @@ public class Board
                 }
 
                 var itemType = Utils.GetRandomNormalTypeExcept(types.ToArray());
-                item.SetItemConfig(m_gameSettings.GetItemConfig(itemType));
+                item.SetItemConfig(m_gameSettings.GetItemConfig(itemType.ToString()));
                 item.SetView();
                 item.SetViewRoot(m_root);
 
@@ -152,7 +152,7 @@ public class Board
                 NormalItem item = new NormalItem();
 
                 var itemType = Utils.GetRandomNormalType();
-                item.SetItemConfig(m_gameSettings.GetItemConfig(itemType));
+                item.SetItemConfig(m_gameSettings.GetItemConfig(itemType.ToString()));
                 item.SetView();
                 item.SetViewRoot(m_root);
 
@@ -266,16 +266,17 @@ public class Board
         eMatchDirection dir = GetMatchDirection(matches);
 
         BonusItem item = new BonusItem();
+        ItemConfig itemConfig = null;
         switch (dir)
         {
             case eMatchDirection.ALL:
-                item.SetType(BonusItem.eBonusType.ALL);
+                itemConfig = m_gameSettings.GetItemConfig(BonusItem.eBonusType.ALL.ToString());
                 break;
             case eMatchDirection.HORIZONTAL:
-                item.SetType(BonusItem.eBonusType.HORIZONTAL);
+                itemConfig = m_gameSettings.GetItemConfig(BonusItem.eBonusType.HORIZONTAL.ToString());
                 break;
             case eMatchDirection.VERTICAL:
-                item.SetType(BonusItem.eBonusType.VERTICAL);
+                itemConfig = m_gameSettings.GetItemConfig(BonusItem.eBonusType.VERTICAL.ToString());
                 break;
         }
 
@@ -287,6 +288,7 @@ public class Board
                 cellToConvert = matches[rnd];
             }
 
+            item.SetItemConfig(itemConfig);
             item.SetView();
             item.SetViewRoot(m_root);
 
