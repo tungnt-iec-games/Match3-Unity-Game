@@ -27,6 +27,11 @@ public class LevelCondition : MonoBehaviour
         m_txt = txt;
     }
 
+    public virtual void Restart()
+    {
+        m_conditionCompleted = false;
+    }
+
     protected virtual void UpdateText() { }
 
     protected void OnConditionComplete()

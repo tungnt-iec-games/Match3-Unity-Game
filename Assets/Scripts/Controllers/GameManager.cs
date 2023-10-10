@@ -150,4 +150,12 @@ public class GameManager : MonoBehaviour
             m_levelCondition = null;
         }
     }
+
+    public void RestartLevel()
+    {
+        if (m_levelCondition != null)
+        {
+            m_levelCondition.Restart();
+        }
+    }
 }
