@@ -25,6 +25,10 @@ public class Board
 
     private int m_matchMin;
 
+    private GameSettings m_gameSettings;
+
+    private Dictionary<NormalItem.eNormalType, int> NormalItemCountMap;
+
     public Board(Transform transform, GameSettings gameSettings)
     {
         m_root = transform;
@@ -35,6 +39,10 @@ public class Board
         this.boardSizeY = gameSettings.BoardSizeY;
 
         m_cells = new Cell[boardSizeX, boardSizeY];
+
+        m_gameSettings = gameSettings;
+
+        NormalItemCountMap = new Dictionary<NormalItem.eNormalType, int>();
 
         CreateBoard();
     }
@@ -47,12 +55,13 @@ public class Board
         {
             for (int y = 0; y < boardSizeY; y++)
             {
-                GameObject go = GameObject.Instantiate(prefabBG);
+                GameObject go = GameHelper.SpawnGameObject(prefabBG, parent: m_root);
                 go.transform.position = origin + new Vector3(x, y, 0f);
-                go.transform.SetParent(m_root);
 
                 Cell cell = go.GetComponent<Cell>();
                 cell.Setup(x, y);
+
+                cell.OnNormalItemExploded += HandleNormalItemExploded;
 
                 m_cells[x, y] = cell;
             }
@@ -100,12 +109,16 @@ public class Board
                     }
                 }
 
-                item.SetType(Utils.GetRandomNormalTypeExcept(types.ToArray()));
+                var itemType = Utils.GetRandomNormalTypeExcept(types.ToArray());
+                string itemTypeStr = itemType.ToString();
+                item.SetItemConfig(m_gameSettings.GetItemConfig(itemTypeStr));
                 item.SetView();
                 item.SetViewRoot(m_root);
 
                 cell.Assign(item);
                 cell.ApplyItemPosition(false);
+
+                AddNormalItem(itemType);
             }
         }
     }
@@ -147,12 +160,40 @@ public class Board
 
                 NormalItem item = new NormalItem();
 
-                item.SetType(Utils.GetRandomNormalType());
+                var ignoreTypes = new List<NormalItem.eNormalType>();
+
+                if (cell.NeighbourBottom != null)
+                {
+                    var bottomItem = cell.NeighbourBottom.Item as NormalItem;
+                    if (bottomItem != null) { ignoreTypes.Add(bottomItem.ItemType); }
+                }
+                if (cell.NeighbourUp != null)
+                {
+                    var upItem = cell.NeighbourUp.Item as NormalItem;
+                    if (upItem != null) { ignoreTypes.Add(upItem.ItemType); }
+                }
+                if (cell.NeighbourLeft != null)
+                {
+                    var leftItem = cell.NeighbourLeft.Item as NormalItem;
+                    if (leftItem != null) { ignoreTypes.Add(leftItem.ItemType); }
+                }
+                if (cell.NeighbourRight != null)
+                {
+                    var rightItem = cell.NeighbourRight.Item as NormalItem;
+                    if (rightItem != null) { ignoreTypes.Add(rightItem.ItemType); }
+                }
+
+                var itemTypes = Utils.GetNormalTypesExcept(ignoreTypes.ToArray());
+                var itemType = Utils.GetLeastAmountNormalType(itemTypes, NormalItemCountMap);
+                string itemTypeStr = itemType.ToString();
+                item.SetItemConfig(m_gameSettings.GetItemConfig(itemTypeStr));
                 item.SetView();
                 item.SetViewRoot(m_root);
 
                 cell.Assign(item);
                 cell.ApplyItemPosition(true);
+
+                AddNormalItem(itemType);
             }
         }
     }
@@ -261,16 +302,17 @@ public class Board
         eMatchDirection dir = GetMatchDirection(matches);
 
         BonusItem item = new BonusItem();
+        ItemConfig itemConfig = null;
         switch (dir)
         {
             case eMatchDirection.ALL:
-                item.SetType(BonusItem.eBonusType.ALL);
+                itemConfig = m_gameSettings.GetItemConfig(BonusItem.eBonusType.ALL.ToString());
                 break;
             case eMatchDirection.HORIZONTAL:
-                item.SetType(BonusItem.eBonusType.HORIZONTAL);
+                itemConfig = m_gameSettings.GetItemConfig(BonusItem.eBonusType.HORIZONTAL.ToString());
                 break;
             case eMatchDirection.VERTICAL:
-                item.SetType(BonusItem.eBonusType.VERTICAL);
+                itemConfig = m_gameSettings.GetItemConfig(BonusItem.eBonusType.VERTICAL.ToString());
                 break;
         }
 
@@ -282,6 +324,7 @@ public class Board
                 cellToConvert = matches[rnd];
             }
 
+            item.SetItemConfig(itemConfig);
             item.SetView();
             item.SetViewRoot(m_root);
 
@@ -318,31 +361,31 @@ public class Board
 
     internal List<Cell> FindFirstMatch()
     {
-        List<Cell> list = new List<Cell>();
+        HashSet<Cell> matchCells = new HashSet<Cell>();
 
         for (int x = 0; x < boardSizeX; x++)
         {
             for (int y = 0; y < boardSizeY; y++)
             {
                 Cell cell = m_cells[x, y];
+                if (matchCells.Contains(cell)) { continue; }
 
                 var listhor = GetHorizontalMatches(cell);
                 if (listhor.Count >= m_matchMin)
                 {
-                    list = listhor;
-                    break;
+                    matchCells.UnionWith(listhor);
                 }
 
                 var listvert = GetVerticalMatches(cell);
                 if (listvert.Count >= m_matchMin)
                 {
-                    list = listvert;
+                    matchCells.UnionWith(listvert);
                     break;
                 }
             }
         }
 
-        return list;
+        return matchCells.ToList();
     }
 
     public List<Cell> CheckBonusIfCompatible(List<Cell> matches)
@@ -660,17 +703,63 @@ public class Board
         }
     }
 
+    private void HandleNormalItemExploded(NormalItem item)
+    {
+        RemoveNormalItem(item.ItemType);
+    }
+
+    private void AddNormalItem(NormalItem.eNormalType type)
+    {
+        if (NormalItemCountMap.ContainsKey(type))
+        {
+            NormalItemCountMap[type]++;
+        }
+        else
+        {
+            NormalItemCountMap.Add(type, 1);
+        }
+    }
+
+    private void RemoveNormalItem(NormalItem.eNormalType type)
+    {
+        if (NormalItemCountMap.ContainsKey(type))
+        {
+            NormalItemCountMap[type]--;
+        }
+        else
+        {
+            NormalItemCountMap.Add(type, 0);
+        }
+    }
+
     public void Clear()
     {
+        NormalItemCountMap.Clear();
+
         for (int x = 0; x < boardSizeX; x++)
         {
             for (int y = 0; y < boardSizeY; y++)
             {
                 Cell cell = m_cells[x, y];
+                cell.OnNormalItemExploded -= HandleNormalItemExploded;
                 cell.Clear();
 
-                GameObject.Destroy(cell.gameObject);
+                GameHelper.DespawnGameObject(cell.gameObject);
                 m_cells[x, y] = null;
+            }
+        }
+    }
+
+    public void Restart()
+    {
+        NormalItemCountMap.Clear();
+     
+        for (int x = 0; x < boardSizeX; x++)
+        {
+            for (int y = 0; y < boardSizeY; y++)
+            {
+                Cell cell = m_cells[x, y];
+                cell.ExplodeItem(true);
             }
         }
     }

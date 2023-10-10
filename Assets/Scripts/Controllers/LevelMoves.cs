@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class LevelMoves : LevelCondition
 {
+    private int m_maxMoves;
+
     private int m_moves;
 
     private BoardController m_board;
@@ -14,12 +16,22 @@ public class LevelMoves : LevelCondition
     {
         base.Setup(value, txt);
 
-        m_moves = (int)value;
+        m_maxMoves = (int)value;
+
+        m_moves = m_maxMoves;
 
         m_board = board;
 
         m_board.OnMoveEvent += OnMove;
 
+        UpdateText();
+    }
+
+    public override void Restart()
+    {
+        base.Restart();
+
+        m_moves = m_maxMoves;
         UpdateText();
     }
 

@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviour
 
     private GameSettings m_gameSettings;
 
+    private PoolManager m_poolManager;
 
     private BoardController m_boardController;
 
@@ -50,9 +51,22 @@ public class GameManager : MonoBehaviour
         State = eStateGame.SETUP;
 
         m_gameSettings = Resources.Load<GameSettings>(Constants.GAME_SETTINGS_PATH);
+        m_gameSettings.Init();
+
+        InitPool();
 
         m_uiMenu = FindObjectOfType<UIMainManager>();
         m_uiMenu.Setup(this);
+    }
+
+    private void InitPool()
+    {
+        m_poolManager = GetComponent<PoolManager>();
+        if (m_poolManager != null)
+        {
+            GameHelper.SpawnGameObjectDelegate = m_poolManager.Spawn;
+            GameHelper.DespawnGameObjectDelegate = m_poolManager.Despawn;
+        }
     }
 
     void Start()
@@ -134,6 +148,18 @@ public class GameManager : MonoBehaviour
 
             Destroy(m_levelCondition);
             m_levelCondition = null;
+        }
+    }
+
+    public void RestartLevel()
+    {
+        if (m_levelCondition != null)
+        {
+            m_levelCondition.Restart();
+        }
+        if (m_boardController != null)
+        {
+            m_boardController.Restart();
         }
     }
 }

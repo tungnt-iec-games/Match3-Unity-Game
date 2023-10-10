@@ -284,6 +284,22 @@ public class BoardController : MonoBehaviour
         m_board.Clear();
     }
 
+    public void Restart()
+    {
+        StopHints();
+
+        StartCoroutine(RestartBoardCoroutine());
+    }
+
+    private IEnumerator RestartBoardCoroutine()
+    {
+        m_board.Restart();
+
+        yield return new WaitForSeconds(0.2f);
+
+        Fill();
+    }
+
     private void ShowHint()
     {
         m_hintIsShown = true;

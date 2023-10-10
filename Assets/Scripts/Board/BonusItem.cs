@@ -15,9 +15,10 @@ public class BonusItem : Item
 
     public eBonusType ItemType;
 
-    public void SetType(eBonusType type)
+    public override void SetItemConfig(ItemConfig itemConfig)
     {
-        ItemType = type;
+        base.SetItemConfig(itemConfig);
+        ItemType = (eBonusType) Enum.Parse(typeof(eBonusType), itemConfig.Type);
     }
 
     protected override string GetPrefabName()

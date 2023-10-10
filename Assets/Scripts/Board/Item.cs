@@ -11,22 +11,33 @@ public class Item
 
     public Transform View { get; private set; }
 
+    protected ItemConfig m_itemConfig;
+
+    public virtual void SetItemConfig(ItemConfig itemConfig)
+    {
+        m_itemConfig = itemConfig;
+    }
 
     public virtual void SetView()
     {
-        string prefabname = GetPrefabName();
-
-        if (!string.IsNullOrEmpty(prefabname))
+        GameObject prefab = Resources.Load<GameObject>("prefabs/itemNormal");
+        if (prefab)
         {
-            GameObject prefab = Resources.Load<GameObject>(prefabname);
-            if (prefab)
-            {
-                View = GameObject.Instantiate(prefab).transform;
-            }
+            var go = GameHelper.SpawnGameObject(prefab);
+            View = go.transform;
+            View.localScale = Vector3.one;
+            
+            var spriteRenderer = go.GetComponent<SpriteRenderer>();
+            spriteRenderer.sprite = GetSprite();
         }
     }
 
     protected virtual string GetPrefabName() { return string.Empty; }
+
+    protected Sprite GetSprite()
+    {
+        return m_itemConfig.Sprite;
+    }
 
     public virtual void SetCell(Cell cell)
     {
@@ -101,7 +112,7 @@ public class Item
             View.DOScale(0.1f, 0.1f).OnComplete(
                 () =>
                 {
-                    GameObject.Destroy(View.gameObject);
+                    GameHelper.DespawnGameObject(View.gameObject);
                     View = null;
                 }
                 );
@@ -132,7 +143,7 @@ public class Item
 
         if (View)
         {
-            GameObject.Destroy(View.gameObject);
+            GameHelper.DespawnGameObject(View.gameObject);
             View = null;
         }
     }
