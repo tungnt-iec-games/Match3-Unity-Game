@@ -25,10 +25,9 @@ public class NormalItem : Item
         ItemType = itemConfig.Type;
     }
 
-    protected override string GetPrefabName()
+    protected override Sprite GetSprite()
     {
-        string prefabname = m_itemConfig?.PrefabName;
-        return prefabname;
+        return m_itemConfig.Sprite;
     }
 
     internal override bool IsSameType(Item other)

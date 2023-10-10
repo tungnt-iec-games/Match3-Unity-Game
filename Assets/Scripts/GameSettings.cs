@@ -45,5 +45,5 @@ public class GameSettings : ScriptableObject
 public class ItemConfig
 {
     public NormalItem.eNormalType Type;
-    public string PrefabName;
+    public Sprite Sprite;
 }

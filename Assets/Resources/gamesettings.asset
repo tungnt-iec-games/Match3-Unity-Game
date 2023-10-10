@@ -20,16 +20,16 @@ MonoBehaviour:
   TimeForHint: 5
   m_itemConfigList:
   - Type: 0
-    PrefabName: prefabs/itemNormal01
+    Sprite: {fileID: 21300000, guid: e5fea27bcfb023d4fa4f7b314a1e468f, type: 3}
   - Type: 1
-    PrefabName: prefabs/itemNormal02
+    Sprite: {fileID: 21300000, guid: fa170d4df6f61ca4d87906fecd033754, type: 3}
   - Type: 2
-    PrefabName: prefabs/itemNormal03
+    Sprite: {fileID: 21300000, guid: ad0255438bdaee746942172f60838326, type: 3}
   - Type: 3
-    PrefabName: prefabs/itemNormal04
+    Sprite: {fileID: 21300000, guid: 5ead70314c8057e4fbad1171b57e2285, type: 3}
   - Type: 4
-    PrefabName: prefabs/itemNormal05
+    Sprite: {fileID: 21300000, guid: 4aade970bd310bf41999ff1d6929698d, type: 3}
   - Type: 5
-    PrefabName: prefabs/itemNormal06
+    Sprite: {fileID: 21300000, guid: 9155563869121a64691c05bc3ca52e14, type: 3}
   - Type: 6
-    PrefabName: prefabs/itemNormal07
+    Sprite: {fileID: 21300000, guid: 7164e9eb7829dfb4595431d2eb01fc76, type: 3}

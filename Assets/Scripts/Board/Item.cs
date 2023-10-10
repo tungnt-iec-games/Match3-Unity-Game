@@ -14,21 +14,21 @@ public class Item
 
     public virtual void SetView()
     {
-        string prefabname = GetPrefabName();
-
-        if (!string.IsNullOrEmpty(prefabname))
+        GameObject prefab = Resources.Load<GameObject>("prefabs/itemNormal");
+        if (prefab)
         {
-            GameObject prefab = Resources.Load<GameObject>(prefabname);
-            if (prefab)
-            {
-                var go = GameHelper.SpawnGameObject(prefab);
-                View = go.transform;
-                View.localScale = Vector3.one;
-            }
+            var go = GameHelper.SpawnGameObject(prefab);
+            View = go.transform;
+            View.localScale = Vector3.one;
+            
+            var spriteRenderer = go.GetComponent<SpriteRenderer>();
+            spriteRenderer.sprite = GetSprite();
         }
     }
 
     protected virtual string GetPrefabName() { return string.Empty; }
+
+    protected virtual Sprite GetSprite() { return null; }
 
     public virtual void SetCell(Cell cell)
     {
