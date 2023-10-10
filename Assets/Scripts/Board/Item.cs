@@ -21,7 +21,9 @@ public class Item
             GameObject prefab = Resources.Load<GameObject>(prefabname);
             if (prefab)
             {
-                View = GameObject.Instantiate(prefab).transform;
+                var go = GameHelper.SpawnGameObject(prefab);
+                View = go.transform;
+                View.localScale = Vector3.one;
             }
         }
     }
@@ -101,7 +103,7 @@ public class Item
             View.DOScale(0.1f, 0.1f).OnComplete(
                 () =>
                 {
-                    GameObject.Destroy(View.gameObject);
+                    GameHelper.DespawnGameObject(View.gameObject);
                     View = null;
                 }
                 );

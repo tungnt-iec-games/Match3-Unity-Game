@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviour
 
     private GameSettings m_gameSettings;
 
+    private PoolManager m_poolManager;
 
     private BoardController m_boardController;
 
@@ -51,8 +52,20 @@ public class GameManager : MonoBehaviour
 
         m_gameSettings = Resources.Load<GameSettings>(Constants.GAME_SETTINGS_PATH);
 
+        InitPool();
+
         m_uiMenu = FindObjectOfType<UIMainManager>();
         m_uiMenu.Setup(this);
+    }
+
+    private void InitPool()
+    {
+        m_poolManager = GetComponent<PoolManager>();
+        if (m_poolManager != null)
+        {
+            GameHelper.SpawnGameObjectDelegate = m_poolManager.Spawn;
+            GameHelper.DespawnGameObjectDelegate = m_poolManager.Despawn;
+        }
     }
 
     void Start()
