@@ -143,7 +143,7 @@ public class Item
 
         if (View)
         {
-            GameObject.Destroy(View.gameObject);
+            GameHelper.DespawnGameObject(View.gameObject);
             View = null;
         }
     }

@@ -676,8 +676,20 @@ public class Board
                 Cell cell = m_cells[x, y];
                 cell.Clear();
 
-                GameObject.Destroy(cell.gameObject);
+                GameHelper.DespawnGameObject(cell.gameObject);
                 m_cells[x, y] = null;
+            }
+        }
+    }
+
+    public void Restart()
+    {
+        for (int x = 0; x < boardSizeX; x++)
+        {
+            for (int y = 0; y < boardSizeY; y++)
+            {
+                Cell cell = m_cells[x, y];
+                cell.ExplodeItem();
             }
         }
     }
