@@ -318,31 +318,31 @@ public class Board
 
     internal List<Cell> FindFirstMatch()
     {
-        List<Cell> list = new List<Cell>();
+        HashSet<Cell> matchCells = new HashSet<Cell>();
 
         for (int x = 0; x < boardSizeX; x++)
         {
             for (int y = 0; y < boardSizeY; y++)
             {
                 Cell cell = m_cells[x, y];
+                if (matchCells.Contains(cell)) { continue; }
 
                 var listhor = GetHorizontalMatches(cell);
                 if (listhor.Count >= m_matchMin)
                 {
-                    list = listhor;
-                    break;
+                    matchCells.UnionWith(listhor);
                 }
 
                 var listvert = GetVerticalMatches(cell);
                 if (listvert.Count >= m_matchMin)
                 {
-                    list = listvert;
+                    matchCells.UnionWith(listvert);
                     break;
                 }
             }
         }
 
-        return list;
+        return matchCells.ToList();
     }
 
     public List<Cell> CheckBonusIfCompatible(List<Cell> matches)
