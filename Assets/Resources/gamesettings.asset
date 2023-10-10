@@ -17,3 +17,19 @@ MonoBehaviour:
   MatchesMin: 3
   LevelMoves: 16
   LevelTime: 30
+  TimeForHint: 5
+  m_itemConfigList:
+  - Type: 0
+    PrefabName: prefabs/itemNormal01
+  - Type: 1
+    PrefabName: prefabs/itemNormal02
+  - Type: 2
+    PrefabName: prefabs/itemNormal03
+  - Type: 3
+    PrefabName: prefabs/itemNormal04
+  - Type: 4
+    PrefabName: prefabs/itemNormal05
+  - Type: 5
+    PrefabName: prefabs/itemNormal06
+  - Type: 6
+    PrefabName: prefabs/itemNormal07

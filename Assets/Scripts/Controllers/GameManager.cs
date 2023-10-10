@@ -51,6 +51,7 @@ public class GameManager : MonoBehaviour
         State = eStateGame.SETUP;
 
         m_gameSettings = Resources.Load<GameSettings>(Constants.GAME_SETTINGS_PATH);
+        m_gameSettings.Init();
 
         InitPool();
 
