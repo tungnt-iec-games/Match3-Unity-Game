@@ -16,15 +16,19 @@ public class GameSettings : ScriptableObject
 
     public float TimeForHint = 5f;
 
+    public eThemeType ThemeType;
+
     [SerializeField]
-    private List<ItemConfig> m_itemConfigList;
+    private List<ThemeConfig> m_themeConfigList;
 
     private Dictionary<NormalItem.eNormalType, ItemConfig> m_itemConfigMap;
 
     public void Init()
     {
+        var themeConfig = m_themeConfigList.Find(c => c.Type == ThemeType);
+
         m_itemConfigMap = new Dictionary<NormalItem.eNormalType, ItemConfig>();
-        foreach (var itemConfig in m_itemConfigList)
+        foreach (var itemConfig in themeConfig.ItemConfigList)
         {
             m_itemConfigMap.Add(itemConfig.Type, itemConfig);
         }
@@ -42,8 +46,21 @@ public class GameSettings : ScriptableObject
 }
 
 [System.Serializable]
+public class ThemeConfig
+{
+    public eThemeType Type;
+    public List<ItemConfig> ItemConfigList;
+}
+
+[System.Serializable]
 public class ItemConfig
 {
     public NormalItem.eNormalType Type;
     public Sprite Sprite;
+}
+
+public enum eThemeType
+{
+    CHARACTER,
+    FISH,
 }

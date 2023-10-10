@@ -18,18 +18,37 @@ MonoBehaviour:
   LevelMoves: 16
   LevelTime: 30
   TimeForHint: 5
-  m_itemConfigList:
+  ThemeType: 1
+  m_themeConfigList:
   - Type: 0
-    Sprite: {fileID: 21300000, guid: e5fea27bcfb023d4fa4f7b314a1e468f, type: 3}
+    ItemConfigList:
+    - Type: 0
+      Sprite: {fileID: 21300000, guid: e5fea27bcfb023d4fa4f7b314a1e468f, type: 3}
+    - Type: 1
+      Sprite: {fileID: 21300000, guid: fa170d4df6f61ca4d87906fecd033754, type: 3}
+    - Type: 2
+      Sprite: {fileID: 21300000, guid: ad0255438bdaee746942172f60838326, type: 3}
+    - Type: 3
+      Sprite: {fileID: 21300000, guid: 5ead70314c8057e4fbad1171b57e2285, type: 3}
+    - Type: 4
+      Sprite: {fileID: 21300000, guid: 4aade970bd310bf41999ff1d6929698d, type: 3}
+    - Type: 5
+      Sprite: {fileID: 21300000, guid: 9155563869121a64691c05bc3ca52e14, type: 3}
+    - Type: 6
+      Sprite: {fileID: 21300000, guid: 7164e9eb7829dfb4595431d2eb01fc76, type: 3}
   - Type: 1
-    Sprite: {fileID: 21300000, guid: fa170d4df6f61ca4d87906fecd033754, type: 3}
-  - Type: 2
-    Sprite: {fileID: 21300000, guid: ad0255438bdaee746942172f60838326, type: 3}
-  - Type: 3
-    Sprite: {fileID: 21300000, guid: 5ead70314c8057e4fbad1171b57e2285, type: 3}
-  - Type: 4
-    Sprite: {fileID: 21300000, guid: 4aade970bd310bf41999ff1d6929698d, type: 3}
-  - Type: 5
-    Sprite: {fileID: 21300000, guid: 9155563869121a64691c05bc3ca52e14, type: 3}
-  - Type: 6
-    Sprite: {fileID: 21300000, guid: 7164e9eb7829dfb4595431d2eb01fc76, type: 3}
+    ItemConfigList:
+    - Type: 0
+      Sprite: {fileID: 21300000, guid: c12cdac060bca1648873faff065f85e8, type: 3}
+    - Type: 1
+      Sprite: {fileID: 21300000, guid: b3d03f60a408b6149ba58fff7af8beef, type: 3}
+    - Type: 2
+      Sprite: {fileID: 21300000, guid: a3dbc24d17c9ee04b93384880a8f7f48, type: 3}
+    - Type: 3
+      Sprite: {fileID: 21300000, guid: 3bbd6a925d3f3c44aa3642011798e97a, type: 3}
+    - Type: 4
+      Sprite: {fileID: 21300000, guid: 23d4fceb15264594fbd2e61365bdeac4, type: 3}
+    - Type: 5
+      Sprite: {fileID: 21300000, guid: e27dc4b27cd098d4cb090fa15c2521a3, type: 3}
+    - Type: 6
+      Sprite: {fileID: 21300000, guid: d4e64b790654a1f45a578702cbc7475e, type: 3}
