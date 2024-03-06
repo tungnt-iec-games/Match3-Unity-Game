@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class Board
 {
@@ -25,6 +26,9 @@ public class Board
 
     private int m_matchMin;
 
+    private GameObject m_prefabBG;
+    private ObjectPool<GameObject> m_pool;
+
     public Board(Transform transform, GameSettings gameSettings)
     {
         m_root = transform;
@@ -42,12 +46,12 @@ public class Board
     private void CreateBoard()
     {
         Vector3 origin = new Vector3(-boardSizeX * 0.5f + 0.5f, -boardSizeY * 0.5f + 0.5f, 0f);
-        GameObject prefabBG = Resources.Load<GameObject>(Constants.PREFAB_CELL_BACKGROUND);
+        m_prefabBG = Resources.Load<GameObject>(Constants.PREFAB_CELL_BACKGROUND);
         for (int x = 0; x < boardSizeX; x++)
         {
             for (int y = 0; y < boardSizeY; y++)
             {
-                GameObject go = GameObject.Instantiate(prefabBG);
+                GameObject go = PrefabDictionaryPool.GetGameObject(m_prefabBG);
                 go.transform.position = origin + new Vector3(x, y, 0f);
                 go.transform.SetParent(m_root);
 
@@ -669,7 +673,7 @@ public class Board
                 Cell cell = m_cells[x, y];
                 cell.Clear();
 
-                GameObject.Destroy(cell.gameObject);
+                PrefabDictionaryPool.ReleaseGameObject(m_prefabBG, cell.gameObject);
                 m_cells[x, y] = null;
             }
         }

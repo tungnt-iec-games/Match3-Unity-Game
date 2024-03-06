@@ -11,17 +11,23 @@ public class Item
 
     public Transform View { get; private set; }
 
+    private GameObject m_prefab;
 
     public virtual void SetView()
     {
-        string prefabname = GetPrefabName();
+        string prefabName = GetPrefabName();
 
-        if (!string.IsNullOrEmpty(prefabname))
+        if (!string.IsNullOrEmpty(prefabName))
         {
-            GameObject prefab = Resources.Load<GameObject>(prefabname);
-            if (prefab)
+            m_prefab = Resources.Load<GameObject>(prefabName);
+            if (m_prefab)
             {
-                View = GameObject.Instantiate(prefab).transform;
+                View = PrefabDictionaryPool.GetGameObject(m_prefab,
+                    obj =>
+                    {
+                        obj.transform.localScale = Vector3.one;
+                    }
+                    ).transform;
             }
         }
     }
@@ -101,7 +107,7 @@ public class Item
             View.DOScale(0.1f, 0.1f).OnComplete(
                 () =>
                 {
-                    GameObject.Destroy(View.gameObject);
+                    PrefabDictionaryPool.ReleaseGameObject(m_prefab, View.gameObject);
                     View = null;
                 }
                 );
@@ -132,7 +138,7 @@ public class Item
 
         if (View)
         {
-            GameObject.Destroy(View.gameObject);
+            PrefabDictionaryPool.ReleaseGameObject(m_prefab, View.gameObject);
             View = null;
         }
     }

@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour
 
 
     private GameSettings m_gameSettings;
-
+    
 
     private BoardController m_boardController;
 
@@ -112,6 +112,7 @@ public class GameManager : MonoBehaviour
         if (m_boardController)
         {
             m_boardController.Clear();
+            PrefabDictionaryPool.Clear();
             Destroy(m_boardController.gameObject);
             m_boardController = null;
         }
