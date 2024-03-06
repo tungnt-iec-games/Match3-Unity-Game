@@ -13,26 +13,29 @@ public class Item
 
     private GameObject m_prefab;
 
+    protected GameSettings m_gameSettings;
+    
+    public Item(GameSettings gameSettings)
+    {
+        m_gameSettings = gameSettings;
+    }
+
     public virtual void SetView()
     {
-        string prefabName = GetPrefabName();
-
-        if (!string.IsNullOrEmpty(prefabName))
+        m_prefab = GetPrefab();
+        
+        if (m_prefab)
         {
-            m_prefab = Resources.Load<GameObject>(prefabName);
-            if (m_prefab)
-            {
-                View = PrefabDictionaryPool.GetGameObject(m_prefab,
-                    obj =>
-                    {
-                        obj.transform.localScale = Vector3.one;
-                    }
-                    ).transform;
-            }
+            View = PrefabDictionaryPool.GetGameObject(m_prefab,
+                obj =>
+                {
+                    obj.transform.localScale = Vector3.one;
+                }
+            ).transform;
         }
     }
 
-    protected virtual string GetPrefabName() { return string.Empty; }
+    protected virtual GameObject GetPrefab() { return null; }
 
     public virtual void SetCell(Cell cell)
     {

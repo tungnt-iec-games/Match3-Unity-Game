@@ -34,14 +34,12 @@ public class GameManager : MonoBehaviour
             StateChangedAction(m_state);
         }
     }
-
-
-    private GameSettings m_gameSettings;
     
+    [SerializeField] private GameSettings GameSettings;
 
     private BoardController m_boardController;
 
-    private UIMainManager m_uiMenu;
+    [SerializeField] private UIMainManager UIMenu;
 
     private LevelCondition m_levelCondition;
 
@@ -49,10 +47,14 @@ public class GameManager : MonoBehaviour
     {
         State = eStateGame.SETUP;
 
-        m_gameSettings = Resources.Load<GameSettings>(Constants.GAME_SETTINGS_PATH);
+        GameSettings.Init();
 
-        m_uiMenu = FindObjectOfType<UIMainManager>();
-        m_uiMenu.Setup(this);
+        if (!UIMenu)
+        {
+            UIMenu = GameObject.FindWithTag("UI").GetComponent<UIMainManager>();
+        }
+
+        UIMenu.Setup(this);
     }
 
     void Start()
@@ -77,17 +79,17 @@ public class GameManager : MonoBehaviour
     public void LoadLevel(eLevelMode mode)
     {
         m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
-        m_boardController.StartGame(this, m_gameSettings);
+        m_boardController.StartGame(this, GameSettings);
 
         if (mode == eLevelMode.MOVES)
         {
             m_levelCondition = this.gameObject.AddComponent<LevelMoves>();
-            m_levelCondition.Setup(m_gameSettings.LevelMoves, m_uiMenu.GetLevelConditionView(), m_boardController);
+            m_levelCondition.Setup(GameSettings.LevelMoves, UIMenu.GetLevelConditionView(), m_boardController);
         }
         else if (mode == eLevelMode.TIMER)
         {
             m_levelCondition = this.gameObject.AddComponent<LevelTime>();
-            m_levelCondition.Setup(m_gameSettings.LevelMoves, m_uiMenu.GetLevelConditionView(), this);
+            m_levelCondition.Setup(GameSettings.LevelMoves, UIMenu.GetLevelConditionView(), this);
         }
 
         m_levelCondition.ConditionCompleteEvent += GameOver;

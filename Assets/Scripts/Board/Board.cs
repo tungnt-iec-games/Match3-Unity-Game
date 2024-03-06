@@ -29,6 +29,8 @@ public class Board
     private GameObject m_prefabBG;
     private ObjectPool<GameObject> m_pool;
 
+    private GameSettings m_gameSettings;
+
     public Board(Transform transform, GameSettings gameSettings)
     {
         m_root = transform;
@@ -40,13 +42,16 @@ public class Board
 
         m_cells = new Cell[boardSizeX, boardSizeY];
 
+        m_prefabBG = gameSettings.CellBGPrefab;
+
+        m_gameSettings = gameSettings;
+
         CreateBoard();
     }
 
     private void CreateBoard()
     {
         Vector3 origin = new Vector3(-boardSizeX * 0.5f + 0.5f, -boardSizeY * 0.5f + 0.5f, 0f);
-        m_prefabBG = Resources.Load<GameObject>(Constants.PREFAB_CELL_BACKGROUND);
         for (int x = 0; x < boardSizeX; x++)
         {
             for (int y = 0; y < boardSizeY; y++)
@@ -83,7 +88,7 @@ public class Board
             for (int y = 0; y < boardSizeY; y++)
             {
                 Cell cell = m_cells[x, y];
-                NormalItem item = new NormalItem();
+                NormalItem item = new NormalItem(m_gameSettings);
 
                 List<NormalItem.eNormalType> types = new List<NormalItem.eNormalType>();
                 if (cell.NeighbourBottom != null)
@@ -149,7 +154,7 @@ public class Board
                 Cell cell = m_cells[x, y];
                 if (!cell.IsEmpty) continue;
 
-                NormalItem item = new NormalItem();
+                NormalItem item = new NormalItem(m_gameSettings);
 
                 item.SetType(Utils.GetRandomNormalType());
                 item.SetView();
@@ -264,7 +269,7 @@ public class Board
     {
         eMatchDirection dir = GetMatchDirection(matches);
 
-        BonusItem item = new BonusItem();
+        BonusItem item = new BonusItem(m_gameSettings);
         switch (dir)
         {
             case eMatchDirection.ALL:
@@ -353,7 +358,7 @@ public class Board
     {
         var dir = GetMatchDirection(matches);
 
-        var bonus = matches.Where(x => x.Item is BonusItem).FirstOrDefault();
+        var bonus = matches.FirstOrDefault(x => x.Item is BonusItem);
         if(bonus == null)
         {
             return matches;
