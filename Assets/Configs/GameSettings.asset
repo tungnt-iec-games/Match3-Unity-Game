@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38477d2c3efe6d948ae0713b3a89a0f0, type: 3}
+  m_Name: GameSettings
+  m_EditorClassIdentifier: 
+  BoardSizeX: 5
+  BoardSizeY: 7
+  MatchesMin: 3
+  LevelMoves: 16
+  LevelTime: 30
+  TimeForHint: 5
+  CellBGPrefab: {fileID: 1645311756642076403, guid: 36ec5f479201921458e80cc24e85189a,
+    type: 3}
+  ItemPrefab: {fileID: 1645311756642076403, guid: 42636182d7ad561418687da1a9301f13,
+    type: 3}
+  CurrentNormalItemConfig: {fileID: 0}
+  NormalItemConfigList:
+  - {fileID: 11400000, guid: 00f34a0699885604eb446031bd3cfd68, type: 2}
+  - {fileID: 11400000, guid: d94cdae5afc1b3d44beb7c44d8c8e5fb, type: 2}
+  BonusItemConfig: {fileID: 11400000, guid: bd6b6339df4f40c49bc337522467e73f, type: 2}

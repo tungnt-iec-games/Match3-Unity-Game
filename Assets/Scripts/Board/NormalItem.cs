@@ -23,9 +23,9 @@ public class NormalItem : Item
         ItemType = type;
     }
 
-    protected override GameObject GetPrefab()
+    protected override Sprite GetVisual()
     {
-        return m_gameSettings.NormalItemDict[ItemType];
+        return m_gameSettings.CurrentNormalItemConfig.GetConfig(ItemType).visual;
     }
 
     internal override bool IsSameType(Item other)

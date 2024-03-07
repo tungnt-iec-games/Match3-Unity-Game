@@ -22,20 +22,22 @@ public class Item
 
     public virtual void SetView()
     {
-        m_prefab = GetPrefab();
+        m_prefab = m_gameSettings.ItemPrefab;
         
         if (m_prefab)
         {
             View = PrefabDictionaryPool.GetGameObject(m_prefab,
-                obj =>
+                view =>
                 {
-                    obj.transform.localScale = Vector3.one;
+                    view.transform.localScale = Vector3.one;
                 }
             ).transform;
+            
+            View.GetComponent<SpriteRenderer>().sprite = GetVisual();
         }
     }
 
-    protected virtual GameObject GetPrefab() { return null; }
+    protected virtual Sprite GetVisual() { return null; }
 
     public virtual void SetCell(Cell cell)
     {

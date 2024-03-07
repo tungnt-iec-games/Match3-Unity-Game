@@ -97,6 +97,16 @@ public class GameManager : MonoBehaviour
         State = eStateGame.GAME_STARTED;
     }
 
+    public void CycleTheme()
+    {
+        GameSettings.CycleTheme();
+    }
+
+    public string GetCurrentThemeName()
+    {
+        return GameSettings.CurrentNormalItemConfig.ThemeName;
+    }
+    
     public void GameOver()
     {
         StartCoroutine(WaitBoardController());

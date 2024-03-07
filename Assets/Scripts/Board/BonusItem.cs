@@ -20,9 +20,9 @@ public class BonusItem : Item
         ItemType = type;
     }
 
-    protected override GameObject GetPrefab()
+    protected override Sprite GetVisual()
     {
-        return m_gameSettings.BonusItemDict[ItemType];
+        return m_gameSettings.BonusItemConfig.GetConfig(ItemType).visual;
     }
 
     internal override bool IsSameType(Item other)

@@ -18,39 +18,40 @@ public class GameSettings : ScriptableObject
     public float TimeForHint = 5f;
 
     public GameObject CellBGPrefab;
-
-    public List<NormalItemConfig> NormalItemConfigs;
-
-    public Dictionary<NormalItem.eNormalType, GameObject> NormalItemDict = new();
-
-    public List<BonusItemConfig> BonusItemConfigs;
+    public GameObject ItemPrefab;
     
-    public Dictionary<BonusItem.eBonusType, GameObject> BonusItemDict = new();
+    [HideInInspector] public NormalItemConfigSO CurrentNormalItemConfig;
+    
+    [SerializeField] private List<NormalItemConfigSO> NormalItemConfigList;
+    
+    public BonusItemConfigSO BonusItemConfig;
 
+    private int m_configIndex = 0;
+    
+    
     public void Init()
     {
-        foreach (var config in NormalItemConfigs)
+        foreach (var config in NormalItemConfigList)
         {
-            NormalItemDict.Add(config.type, config.prefab);
+            config.Init();
         }
         
-        foreach (var config in BonusItemConfigs)
-        {
-            BonusItemDict.Add(config.type, config.prefab);
-        }
+        BonusItemConfig.Init();
+        
+        CurrentNormalItemConfig = NormalItemConfigList[m_configIndex];
     }
-}
 
-[Serializable]
-public class NormalItemConfig
-{
-    public NormalItem.eNormalType type;
-    public GameObject prefab;
-}
+    public void CycleTheme()
+    {
+        if (m_configIndex == NormalItemConfigList.Count - 1)
+        {
+            m_configIndex = 0;
+        }
+        else
+        {
+            m_configIndex++;
+        }
 
-[Serializable]
-public class BonusItemConfig
-{
-    public BonusItem.eBonusType type;
-    public GameObject prefab;
+        CurrentNormalItemConfig = NormalItemConfigList[m_configIndex]; 
+    }
 }
