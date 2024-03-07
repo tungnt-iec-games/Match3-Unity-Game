@@ -118,4 +118,19 @@ public class UIMainManager : MonoBehaviour
     {
         m_gameManager.SetState(GameManager.eStateGame.GAME_STARTED);
     }
+
+    internal void CycleTheme()
+    {
+        m_gameManager.CycleTheme();
+    }
+
+    internal string GetCurrentThemeName()
+    {
+        return m_gameManager.GetCurrentThemeName();
+    }
+
+    internal void RestartLevel()
+    {
+        m_gameManager.RestartLevel();
+    }
 }

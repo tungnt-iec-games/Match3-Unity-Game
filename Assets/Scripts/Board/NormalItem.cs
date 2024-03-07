@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,35 +23,9 @@ public class NormalItem : Item
         ItemType = type;
     }
 
-    protected override string GetPrefabName()
+    protected override Sprite GetVisual()
     {
-        string prefabname = string.Empty;
-        switch (ItemType)
-        {
-            case eNormalType.TYPE_ONE:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_ONE;
-                break;
-            case eNormalType.TYPE_TWO:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_TWO;
-                break;
-            case eNormalType.TYPE_THREE:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_THREE;
-                break;
-            case eNormalType.TYPE_FOUR:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_FOUR;
-                break;
-            case eNormalType.TYPE_FIVE:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_FIVE;
-                break;
-            case eNormalType.TYPE_SIX:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_SIX;
-                break;
-            case eNormalType.TYPE_SEVEN:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_SEVEN;
-                break;
-        }
-
-        return prefabname;
+        return m_gameSettings.CurrentNormalItemConfig.GetConfig(ItemType).visual;
     }
 
     internal override bool IsSameType(Item other)
@@ -58,5 +33,9 @@ public class NormalItem : Item
         NormalItem it = other as NormalItem;
 
         return it != null && it.ItemType == this.ItemType;
+    }
+
+    public NormalItem(GameSettings gameSettings) : base(gameSettings)
+    {
     }
 }

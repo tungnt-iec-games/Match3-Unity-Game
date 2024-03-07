@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class Board
 {
@@ -25,6 +26,11 @@ public class Board
 
     private int m_matchMin;
 
+    private GameObject m_prefabBG;
+    private ObjectPool<GameObject> m_pool;
+
+    private GameSettings m_gameSettings;
+
     public Board(Transform transform, GameSettings gameSettings)
     {
         m_root = transform;
@@ -36,18 +42,21 @@ public class Board
 
         m_cells = new Cell[boardSizeX, boardSizeY];
 
+        m_prefabBG = gameSettings.CellBGPrefab;
+
+        m_gameSettings = gameSettings;
+
         CreateBoard();
     }
 
     private void CreateBoard()
     {
         Vector3 origin = new Vector3(-boardSizeX * 0.5f + 0.5f, -boardSizeY * 0.5f + 0.5f, 0f);
-        GameObject prefabBG = Resources.Load<GameObject>(Constants.PREFAB_CELL_BACKGROUND);
         for (int x = 0; x < boardSizeX; x++)
         {
             for (int y = 0; y < boardSizeY; y++)
             {
-                GameObject go = GameObject.Instantiate(prefabBG);
+                GameObject go = PrefabDictionaryPool.GetGameObject(m_prefabBG);
                 go.transform.position = origin + new Vector3(x, y, 0f);
                 go.transform.SetParent(m_root);
 
@@ -79,9 +88,9 @@ public class Board
             for (int y = 0; y < boardSizeY; y++)
             {
                 Cell cell = m_cells[x, y];
-                NormalItem item = new NormalItem();
+                NormalItem item = new NormalItem(m_gameSettings);
 
-                List<NormalItem.eNormalType> types = new List<NormalItem.eNormalType>();
+                HashSet<NormalItem.eNormalType> types = new HashSet<NormalItem.eNormalType>();
                 if (cell.NeighbourBottom != null)
                 {
                     NormalItem nitem = cell.NeighbourBottom.Item as NormalItem;
@@ -145,9 +154,12 @@ public class Board
                 Cell cell = m_cells[x, y];
                 if (!cell.IsEmpty) continue;
 
-                NormalItem item = new NormalItem();
+                var types = Utils.GetNormalTypesExcept(cell.GetAllAdjacentItemTypes().ToArray());
+                var type = Utils.GetLeastAmountExcept(m_cells, types);
+                
+                NormalItem item = new NormalItem(m_gameSettings);
 
-                item.SetType(Utils.GetRandomNormalType());
+                item.SetType(type);
                 item.SetView();
                 item.SetViewRoot(m_root);
 
@@ -165,6 +177,18 @@ public class Board
             {
                 Cell cell = m_cells[x, y];
                 cell.ExplodeItem();
+            }
+        }
+    }
+
+    internal void RemoveAllItems()
+    {
+        for (int x = 0; x < boardSizeX; x++)
+        {
+            for (int y = 0; y < boardSizeY; y++)
+            {
+                Cell cell = m_cells[x, y];
+                cell.RemoveItem();
             }
         }
     }
@@ -260,7 +284,7 @@ public class Board
     {
         eMatchDirection dir = GetMatchDirection(matches);
 
-        BonusItem item = new BonusItem();
+        BonusItem item = new BonusItem(m_gameSettings);
         switch (dir)
         {
             case eMatchDirection.ALL:
@@ -349,7 +373,7 @@ public class Board
     {
         var dir = GetMatchDirection(matches);
 
-        var bonus = matches.Where(x => x.Item is BonusItem).FirstOrDefault();
+        var bonus = matches.FirstOrDefault(x => x.Item is BonusItem);
         if(bonus == null)
         {
             return matches;
@@ -660,7 +684,7 @@ public class Board
         }
     }
 
-    public void Clear()
+    public void RemoveBoard()
     {
         for (int x = 0; x < boardSizeX; x++)
         {
@@ -669,7 +693,7 @@ public class Board
                 Cell cell = m_cells[x, y];
                 cell.Clear();
 
-                GameObject.Destroy(cell.gameObject);
+                PrefabDictionaryPool.ReleaseGameObject(m_prefabBG, cell.gameObject);
                 m_cells[x, y] = null;
             }
         }

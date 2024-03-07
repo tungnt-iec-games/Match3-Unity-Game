@@ -34,67 +34,97 @@ public class GameManager : MonoBehaviour
             StateChangedAction(m_state);
         }
     }
-
-
-    private GameSettings m_gameSettings;
-
+    
+    [SerializeField] private GameSettings GameSettings;
 
     private BoardController m_boardController;
 
-    private UIMainManager m_uiMenu;
+    [SerializeField] private UIMainManager UIMenu;
 
     private LevelCondition m_levelCondition;
+
+    private eLevelMode m_currentMode;
 
     private void Awake()
     {
         State = eStateGame.SETUP;
 
-        m_gameSettings = Resources.Load<GameSettings>(Constants.GAME_SETTINGS_PATH);
+        GameSettings.Init();
 
-        m_uiMenu = FindObjectOfType<UIMainManager>();
-        m_uiMenu.Setup(this);
+        if (!UIMenu)
+        {
+            UIMenu = GameObject.FindWithTag("UI").GetComponent<UIMainManager>();
+        }
+
+        UIMenu.Setup(this);
     }
 
     void Start()
     {
         State = eStateGame.MAIN_MENU;
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (m_boardController != null) m_boardController.Update();
-    }
-
-
+    
     internal void SetState(eStateGame state)
     {
         State = state;
 
         if(State == eStateGame.PAUSE)
         {
+            Time.timeScale = 0f;
             DOTween.PauseAll();
         }
         else
         {
+            Time.timeScale = 1f;
             DOTween.PlayAll();
         }
     }
 
     public void LoadLevel(eLevelMode mode)
     {
-        m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
-        m_boardController.StartGame(this, m_gameSettings);
+        if (m_boardController)
+        {
+            m_boardController.gameObject.SetActive(true);
+        }
+        else
+        {
+            m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
+            m_boardController.Init(this, GameSettings);
+        }
+        
+        m_boardController.StartGame();
+        
+        m_currentMode = mode;
+        
+        SetupLevelCondition(m_currentMode);
+    }
 
+    public void RestartLevel()
+    {
+        m_boardController.ResetBoard();
+        
+        if (m_levelCondition != null)
+        {
+            m_levelCondition.ConditionCompleteEvent -= GameOver;
+
+            Destroy(m_levelCondition);
+            m_levelCondition = null;
+        }
+        
+        SetupLevelCondition(m_currentMode);
+    }
+
+    private void SetupLevelCondition(eLevelMode mode)
+    {
         if (mode == eLevelMode.MOVES)
         {
             m_levelCondition = this.gameObject.AddComponent<LevelMoves>();
-            m_levelCondition.Setup(m_gameSettings.LevelMoves, m_uiMenu.GetLevelConditionView(), m_boardController);
+            m_levelCondition.Setup(GameSettings.LevelMoves, UIMenu.GetLevelConditionView(), m_boardController);
         }
         else if (mode == eLevelMode.TIMER)
         {
             m_levelCondition = this.gameObject.AddComponent<LevelTime>();
-            m_levelCondition.Setup(m_gameSettings.LevelMoves, m_uiMenu.GetLevelConditionView(), this);
+            m_levelCondition.Setup(GameSettings.LevelMoves, UIMenu.GetLevelConditionView(), this);
         }
 
         m_levelCondition.ConditionCompleteEvent += GameOver;
@@ -102,6 +132,16 @@ public class GameManager : MonoBehaviour
         State = eStateGame.GAME_STARTED;
     }
 
+    public void CycleTheme()
+    {
+        GameSettings.CycleTheme();
+    }
+
+    public string GetCurrentThemeName()
+    {
+        return GameSettings.CurrentNormalItemConfig.ThemeName;
+    }
+    
     public void GameOver()
     {
         StartCoroutine(WaitBoardController());
@@ -111,9 +151,9 @@ public class GameManager : MonoBehaviour
     {
         if (m_boardController)
         {
-            m_boardController.Clear();
-            Destroy(m_boardController.gameObject);
-            m_boardController = null;
+            m_boardController.RemoveBoard();
+            PrefabDictionaryPool.Clear();
+            m_boardController.gameObject.SetActive(false);
         }
     }
 

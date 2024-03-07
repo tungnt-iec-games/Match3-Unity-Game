@@ -31,18 +31,18 @@ public class BoardController : MonoBehaviour
 
     private bool m_gameOver;
 
-    public void StartGame(GameManager gameManager, GameSettings gameSettings)
+    public void Init(GameManager gameManager, GameSettings gameSettings)
     {
         m_gameManager = gameManager;
-
         m_gameSettings = gameSettings;
-
         m_gameManager.StateChangedAction += OnGameStateChange;
-
         m_cam = Camera.main;
-
         m_board = new Board(this.transform, gameSettings);
+    }
 
+    public void StartGame()
+    {
+        m_gameOver = false;
         Fill();
     }
 
@@ -69,6 +69,17 @@ public class BoardController : MonoBehaviour
         }
     }
 
+    public void ResetBoard()
+    {
+        m_gameOver = false;
+        if (IsBusy)
+        {
+            DOTween.KillAll();
+        }
+
+        m_board.RemoveAllItems();
+        Fill();
+    }
 
     public void Update()
     {
@@ -279,9 +290,9 @@ public class BoardController : MonoBehaviour
         return cell1.IsNeighbour(cell2);
     }
 
-    internal void Clear()
+    internal void RemoveBoard()
     {
-        m_board.Clear();
+        m_board.RemoveBoard();
     }
 
     private void ShowHint()

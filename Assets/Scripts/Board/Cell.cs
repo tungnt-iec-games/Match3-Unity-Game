@@ -76,6 +76,14 @@ public class Cell : MonoBehaviour
         Item = null;
     }
 
+    internal void RemoveItem()
+    {
+        if (Item == null) return;
+
+        Item.RemoveView();
+        Item = null;
+    }
+
     internal void AnimateItemForHint()
     {
         Item.AnimateForHint();

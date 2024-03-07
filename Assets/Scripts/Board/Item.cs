@@ -11,22 +11,33 @@ public class Item
 
     public Transform View { get; private set; }
 
+    private GameObject m_prefab;
+
+    protected GameSettings m_gameSettings;
+    
+    public Item(GameSettings gameSettings)
+    {
+        m_gameSettings = gameSettings;
+    }
 
     public virtual void SetView()
     {
-        string prefabname = GetPrefabName();
-
-        if (!string.IsNullOrEmpty(prefabname))
+        m_prefab = m_gameSettings.ItemPrefab;
+        
+        if (m_prefab)
         {
-            GameObject prefab = Resources.Load<GameObject>(prefabname);
-            if (prefab)
-            {
-                View = GameObject.Instantiate(prefab).transform;
-            }
+            View = PrefabDictionaryPool.GetGameObject(m_prefab,
+                view =>
+                {
+                    view.transform.localScale = Vector3.one;
+                }
+            ).transform;
+            
+            View.GetComponent<SpriteRenderer>().sprite = GetVisual();
         }
     }
 
-    protected virtual string GetPrefabName() { return string.Empty; }
+    protected virtual Sprite GetVisual() { return null; }
 
     public virtual void SetCell(Cell cell)
     {
@@ -98,17 +109,9 @@ public class Item
     {
         if (View)
         {
-            View.DOScale(0.1f, 0.1f).OnComplete(
-                () =>
-                {
-                    GameObject.Destroy(View.gameObject);
-                    View = null;
-                }
-                );
+            View.DOScale(0.1f, 0.1f).OnComplete(RemoveView);
         }
     }
-
-
 
     internal void AnimateForHint()
     {
@@ -130,9 +133,14 @@ public class Item
     {
         Cell = null;
 
+        RemoveView();
+    }
+
+    internal void RemoveView()
+    {
         if (View)
         {
-            GameObject.Destroy(View.gameObject);
+            PrefabDictionaryPool.ReleaseGameObject(m_prefab, View.gameObject);
             View = null;
         }
     }
