@@ -43,6 +43,8 @@ public class GameManager : MonoBehaviour
 
     private LevelCondition m_levelCondition;
 
+    private eLevelMode m_currentMode;
+
     private void Awake()
     {
         State = eStateGame.SETUP;
@@ -68,19 +70,52 @@ public class GameManager : MonoBehaviour
 
         if(State == eStateGame.PAUSE)
         {
+            Time.timeScale = 0f;
             DOTween.PauseAll();
         }
         else
         {
+            Time.timeScale = 1f;
             DOTween.PlayAll();
         }
     }
 
     public void LoadLevel(eLevelMode mode)
     {
-        m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
-        m_boardController.StartGame(this, GameSettings);
+        if (m_boardController)
+        {
+            m_boardController.gameObject.SetActive(true);
+        }
+        else
+        {
+            m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
+            m_boardController.Init(this, GameSettings);
+        }
+        
+        m_boardController.StartGame();
+        
+        m_currentMode = mode;
+        
+        SetupLevelCondition(m_currentMode);
+    }
 
+    public void RestartLevel()
+    {
+        m_boardController.ResetBoard();
+        
+        if (m_levelCondition != null)
+        {
+            m_levelCondition.ConditionCompleteEvent -= GameOver;
+
+            Destroy(m_levelCondition);
+            m_levelCondition = null;
+        }
+        
+        SetupLevelCondition(m_currentMode);
+    }
+
+    private void SetupLevelCondition(eLevelMode mode)
+    {
         if (mode == eLevelMode.MOVES)
         {
             m_levelCondition = this.gameObject.AddComponent<LevelMoves>();
@@ -116,10 +151,9 @@ public class GameManager : MonoBehaviour
     {
         if (m_boardController)
         {
-            m_boardController.Clear();
+            m_boardController.RemoveBoard();
             PrefabDictionaryPool.Clear();
-            Destroy(m_boardController.gameObject);
-            m_boardController = null;
+            m_boardController.gameObject.SetActive(false);
         }
     }
 

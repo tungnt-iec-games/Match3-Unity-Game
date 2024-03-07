@@ -109,17 +109,9 @@ public class Item
     {
         if (View)
         {
-            View.DOScale(0.1f, 0.1f).OnComplete(
-                () =>
-                {
-                    PrefabDictionaryPool.ReleaseGameObject(m_prefab, View.gameObject);
-                    View = null;
-                }
-                );
+            View.DOScale(0.1f, 0.1f).OnComplete(RemoveView);
         }
     }
-
-
 
     internal void AnimateForHint()
     {
@@ -141,6 +133,11 @@ public class Item
     {
         Cell = null;
 
+        RemoveView();
+    }
+
+    internal void RemoveView()
+    {
         if (View)
         {
             PrefabDictionaryPool.ReleaseGameObject(m_prefab, View.gameObject);

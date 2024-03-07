@@ -128,4 +128,9 @@ public class UIMainManager : MonoBehaviour
     {
         return m_gameManager.GetCurrentThemeName();
     }
+
+    internal void RestartLevel()
+    {
+        m_gameManager.RestartLevel();
+    }
 }
