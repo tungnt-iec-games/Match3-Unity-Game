@@ -90,7 +90,7 @@ public class Board
                 Cell cell = m_cells[x, y];
                 NormalItem item = new NormalItem(m_gameSettings);
 
-                List<NormalItem.eNormalType> types = new List<NormalItem.eNormalType>();
+                HashSet<NormalItem.eNormalType> types = new HashSet<NormalItem.eNormalType>();
                 if (cell.NeighbourBottom != null)
                 {
                     NormalItem nitem = cell.NeighbourBottom.Item as NormalItem;
@@ -154,9 +154,12 @@ public class Board
                 Cell cell = m_cells[x, y];
                 if (!cell.IsEmpty) continue;
 
+                var types = Utils.GetNormalTypesExcept(cell.GetAllAdjacentItemTypes().ToArray());
+                var type = Utils.GetLeastAmountExcept(m_cells, types);
+                
                 NormalItem item = new NormalItem(m_gameSettings);
 
-                item.SetType(Utils.GetRandomNormalType());
+                item.SetType(type);
                 item.SetView();
                 item.SetViewRoot(m_root);
 
