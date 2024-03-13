@@ -25,6 +25,8 @@ public class Board
 
     private int m_matchMin;
 
+    Dictionary<NormalItem.eNormalType, int> m_eNormalTypeCollection;
+
     public Board(Transform transform, GameSettings gameSettings)
     {
         m_root = transform;
@@ -35,7 +37,7 @@ public class Board
         this.boardSizeY = gameSettings.BoardSizeY;
 
         m_cells = new Cell[boardSizeX, boardSizeY];
-
+        m_eNormalTypeCollection = new Dictionary<NormalItem.eNormalType, int>();
         CreateBoard();
     }
 
@@ -100,7 +102,17 @@ public class Board
                     }
                 }
 
-                item.SetType(Utils.GetRandomNormalTypeExcept(types.ToArray()));
+                NormalItem.eNormalType randomType = Utils.GetRandomNormalTypeExcept(types.ToArray());
+                if(!m_eNormalTypeCollection.ContainsKey(randomType))
+                {
+                    m_eNormalTypeCollection.Add(randomType, 1);
+                }
+                else
+                {
+                    m_eNormalTypeCollection[randomType]++;
+                }
+
+                item.SetType(randomType);
                 item.SetView();
                 item.SetViewRoot(m_root);
 
@@ -145,9 +157,45 @@ public class Board
                 Cell cell = m_cells[x, y];
                 if (!cell.IsEmpty) continue;
 
-                NormalItem item = new NormalItem();
+                List<NormalItem.eNormalType> types = new List<NormalItem.eNormalType>();
+                if (cell.NeighbourBottom != null)
+                {
+                    NormalItem nitem = cell.NeighbourBottom.Item as NormalItem;
+                    if (nitem != null && !types.Contains(nitem.ItemType))
+                    {
+                        types.Add(nitem.ItemType);
+                    }
+                }
 
-                item.SetType(Utils.GetRandomNormalType());
+                if (cell.NeighbourLeft != null)
+                {
+                    NormalItem nitem = cell.NeighbourLeft.Item as NormalItem;
+                    if (nitem != null && !types.Contains(nitem.ItemType))
+                    {
+                        types.Add(nitem.ItemType);
+                    }
+                }
+
+                if (cell.NeighbourUp != null)
+                {
+                    NormalItem nitem = cell.NeighbourUp.Item as NormalItem;
+                    if (nitem != null && !types.Contains(nitem.ItemType))
+                    {
+                        types.Add(nitem.ItemType);
+                    }
+                }
+
+                if (cell.NeighbourRight != null)
+                {
+                    NormalItem nitem = cell.NeighbourRight.Item as NormalItem;
+                    if (nitem != null && !types.Contains(nitem.ItemType))
+                    {
+                        types.Add(nitem.ItemType);
+                    }
+                }
+
+                NormalItem item = new NormalItem();
+                item.SetType(Utils.GetNormalTypeWithLeastAmountExcept(types.ToArray(), m_eNormalTypeCollection));
                 item.SetView();
                 item.SetViewRoot(m_root);
 
