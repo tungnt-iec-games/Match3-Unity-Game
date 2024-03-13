@@ -23,6 +23,7 @@ public class LevelTime : LevelCondition
     private void Update()
     {
         if (m_conditionCompleted) return;
+        if (m_mngr.m_currentLevelMode != GameManager.eLevelMode.TIMER) return;
 
         if (m_mngr.State != GameManager.eStateGame.GAME_STARTED) return;
 

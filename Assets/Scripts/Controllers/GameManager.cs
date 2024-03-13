@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour
 
 
     private GameSettings m_gameSettings;
-
+    private GameDataManager m_gameDataManager;
 
     private BoardController m_boardController;
 
@@ -45,12 +45,14 @@ public class GameManager : MonoBehaviour
 
     private LevelCondition m_levelCondition;
 
+    public eLevelMode m_currentLevelMode { get; private set; }
+
     private void Awake()
     {
         State = eStateGame.SETUP;
 
         m_gameSettings = Resources.Load<GameSettings>(Constants.GAME_SETTINGS_PATH);
-
+        m_gameDataManager = new GameDataManager();
         m_uiMenu = FindObjectOfType<UIMainManager>();
         m_uiMenu.Setup(this);
     }
@@ -83,6 +85,7 @@ public class GameManager : MonoBehaviour
 
     public void LoadLevel(eLevelMode mode)
     {
+        m_currentLevelMode = mode;
         m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
         m_boardController.StartGame(this, m_gameSettings);
 
@@ -94,7 +97,7 @@ public class GameManager : MonoBehaviour
         else if (mode == eLevelMode.TIMER)
         {
             m_levelCondition = this.gameObject.AddComponent<LevelTime>();
-            m_levelCondition.Setup(m_gameSettings.LevelMoves, m_uiMenu.GetLevelConditionView(), this);
+            m_levelCondition.Setup(m_gameSettings.LevelTime, m_uiMenu.GetLevelConditionView(), this);
         }
 
         m_levelCondition.ConditionCompleteEvent += GameOver;

@@ -1,7 +1,8 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public class NormalItem : Item
 {
     public enum eNormalType
@@ -16,10 +17,20 @@ public class NormalItem : Item
     }
 
     public eNormalType ItemType;
+    public Sprite m_Sprite;
 
     public void SetType(eNormalType type)
     {
         ItemType = type;
+    }
+    public override void SetView()
+    {
+        GameObject prefab = Resources.Load<GameObject>(Constants.PREFAB_NORMAL_ITEM);
+        prefab.GetComponent<SCR_NormalItem>().InitGUI(ItemType);
+        if (prefab)
+        {
+            View = GameObject.Instantiate(prefab).transform;
+        }
     }
 
     protected override string GetPrefabName()
@@ -59,4 +70,10 @@ public class NormalItem : Item
 
         return it != null && it.ItemType == this.ItemType;
     }
+}
+
+[CreateAssetMenu(fileName = "NormalItemInfo", menuName = "ScriptableObjects/NormalItemInfo", order = 1)]
+public class NormalItemInfo : ScriptableObject
+{
+    public List<NormalItem> m_ListNormalItem;
 }
