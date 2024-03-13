@@ -118,4 +118,17 @@ public class UIMainManager : MonoBehaviour
     {
         m_gameManager.SetState(GameManager.eStateGame.GAME_STARTED);
     }
+
+    internal void RestartGame()
+    {
+        m_gameManager.ClearLevel();
+        if(m_gameManager.m_currentLevelMode == GameManager.eLevelMode.TIMER)
+        {
+            LoadLevelTimer();
+        }
+        else
+        {
+            LoadLevelMoves();
+        }
+    }
 }
