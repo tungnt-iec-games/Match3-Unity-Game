@@ -4,6 +4,8 @@
 
     public const string PREFAB_CELL_BACKGROUND = "prefabs/cellBackground";
 
+    public const string PREFAB_NORMAL_ITEM = "prefabs/PFB_NormalItem";
+
     public const string PREFAB_NORMAL_TYPE_ONE = "prefabs/itemNormal01";
 
     public const string PREFAB_NORMAL_TYPE_TWO = "prefabs/itemNormal02";

@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour
 
 
     private GameSettings m_gameSettings;
-
+    private GameDataManager m_gameDataManager;
 
     private BoardController m_boardController;
 
@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
         State = eStateGame.SETUP;
 
         m_gameSettings = Resources.Load<GameSettings>(Constants.GAME_SETTINGS_PATH);
-
+        m_gameDataManager = new GameDataManager();
         m_uiMenu = FindObjectOfType<UIMainManager>();
         m_uiMenu.Setup(this);
     }
